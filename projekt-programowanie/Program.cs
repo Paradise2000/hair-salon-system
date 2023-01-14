@@ -1,7 +1,10 @@
+using projekt_programowanie.Entities;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<ProjektDbContext>();
 
 var app = builder.Build();
 

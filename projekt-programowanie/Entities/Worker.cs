@@ -3,12 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace projekt_programowanie.Entities
 {
-    public class Worker
+    public class Worker : User
     {
-        [Key]
-        [ForeignKey("User")]
-        public int UserId { get; set; }
-        public User User { get; set; }
+        public string? Description { get; set; }
+        public string? ProfilePhotoPath { get; set; }
 
         public List<BookedVisit> BookedVisits { get; set; }
         public List<WorkerAvailability> WorkersAvailabilities { get; set; }

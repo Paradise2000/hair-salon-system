@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using projekt_programowanie.Entities;
 
@@ -11,9 +12,11 @@ using projekt_programowanie.Entities;
 namespace projektprogramowanie.Migrations
 {
     [DbContext(typeof(ProjektDbContext))]
-    partial class ProjektDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230114173345_TPHinUsers")]
+    partial class TPHinUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,9 +48,6 @@ namespace projektprogramowanie.Migrations
                     b.Property<int?>("WorkerId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("isCancelled")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
@@ -56,7 +56,7 @@ namespace projektprogramowanie.Migrations
 
                     b.HasIndex("WorkerId");
 
-                    b.ToTable("BookedVisits", (string)null);
+                    b.ToTable("BookedVisits");
                 });
 
             modelBuilder.Entity("projekt_programowanie.Entities.Service", b =>
@@ -79,7 +79,7 @@ namespace projektprogramowanie.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("projekt_programowanie.Entities.User", b =>
@@ -116,7 +116,7 @@ namespace projektprogramowanie.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("User");
 
@@ -150,7 +150,7 @@ namespace projektprogramowanie.Migrations
 
                     b.HasIndex("WorkerId");
 
-                    b.ToTable("WorkersAvailabilities", (string)null);
+                    b.ToTable("WorkersAvailabilities");
                 });
 
             modelBuilder.Entity("projekt_programowanie.Entities.Client", b =>
@@ -163,12 +163,6 @@ namespace projektprogramowanie.Migrations
             modelBuilder.Entity("projekt_programowanie.Entities.Worker", b =>
                 {
                     b.HasBaseType("projekt_programowanie.Entities.User");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProfilePhotoPath")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("Worker");
                 });
