@@ -10,10 +10,14 @@ namespace projekt_programowanie.Entities
         public DbSet<BookedVisit> BookedVisits { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Worker> Workers { get; set; }
+        public DbSet<Client> Clients { get; set; }
         public DbSet<WorkerAvailability> WorkersAvailabilities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                .HasDiscriminator<string>("Role");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

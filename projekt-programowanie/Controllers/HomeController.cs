@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using projekt_programowanie.Models;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace projekt_programowanie.Controllers
 {
@@ -18,8 +20,10 @@ namespace projekt_programowanie.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult Privacy()
         {
+            ViewBag.Role = this.User.FindFirstValue(ClaimTypes.Email);
             return View();
         }
 
