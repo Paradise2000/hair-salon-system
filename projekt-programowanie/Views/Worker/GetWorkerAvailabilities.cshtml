@@ -1,0 +1,54 @@
+﻿@model IEnumerable<projekt_programowanie.DTOs.GetWorkerAvailabilityDto>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Imię
+            </th>
+            <th>
+                Telefon pracownika
+            </th>
+            <th>
+                Od godziny
+            </th>
+            <th>
+                Do godziny
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WorkerFirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WorkerPhone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Start)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.End)
+                </td>
+                <td>
+                    @using (Html.BeginForm("VisitBooking", "Client", FormMethod.Post))
+                    {
+                        <input type="hidden" name="ServiceId" value="@item.ServiceId" />
+                        <input type="hidden" name="WorkerId" value="@item.WorkerId" />
+                        <input type="hidden" name="WorkerFirstName" value="@item.WorkerFirstName" />
+                        <input type="hidden" name="WorkerPhone" value="@item.WorkerPhone" />
+                        <input type="hidden" name="Date" value="@item.Date" />
+                        <input type="hidden" name="Start" value="@item.Start" />
+                        <input type="hidden" name="End" value="@item.End" />
+                        <input type="hidden" name="Price" value="@item.Price" />
+                        <input type="submit" class="btn btn-primary " value="Rezerwuj teraz" />
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
