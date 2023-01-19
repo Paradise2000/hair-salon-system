@@ -1,0 +1,44 @@
+﻿@model IEnumerable<projekt_programowanie.Entities.Service>
+
+<h3>Wybierz usługę</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nazwa usługi
+            </th>
+            <th>
+                Czas trwania usługi
+            </th>
+            <th>
+                Cena
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceDuration.TotalMinutes) min
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServicePrice)
+                </td>
+                <td>
+                    @using (Html.BeginForm("GetWorkerAvailabilities", "Client", FormMethod.Post))
+                    {
+                        <input type="hidden" name="ServiceId" value="@item.Id" />
+                        <input type="submit" class="btn btn-primary " value="Sprawdź terminy" />
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

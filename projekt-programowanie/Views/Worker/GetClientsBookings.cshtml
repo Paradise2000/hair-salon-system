@@ -1,0 +1,66 @@
+﻿@model IEnumerable<projekt_programowanie.DTOs.GetClientsBookingsDto>
+
+<h3>Zarezerwowane wizyty</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Imię klienta
+            </th>
+            <th>
+                Nazwisko klienta
+            </th>
+            <th>
+                Telefon do klienta
+            </th>
+            <th>
+                Nazwa usługi
+            </th>
+            <th>
+                Data
+            </th>
+            <th>
+                Od godziny
+            </th>
+            <th>
+                Do godziny
+            </th>
+            <th>
+                Cena
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClientFirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClientLastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClientPhone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceName)
+                </td>
+                <td>
+                    @Convert.ToDateTime(item.Date).ToString("dd/MM/yyyy")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Start)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.End)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

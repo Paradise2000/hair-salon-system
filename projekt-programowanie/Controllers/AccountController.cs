@@ -31,7 +31,7 @@ namespace projekt_programowanie.Controllers
         [HttpPost]
         public IActionResult RegisterWorker(RegisterDto dto)
         {
-            _context.Clients.Add(new Client
+            _context.Workers.Add(new Worker
             {
                 FirstName= dto.FirstName,
                 LastName= dto.LastName,
@@ -42,6 +42,12 @@ namespace projekt_programowanie.Controllers
 
             _context.SaveChanges();
 
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult RegisterClient()
+        {
             return View();
         }
 

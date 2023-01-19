@@ -14,7 +14,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">projekt_programowanie</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Salon fryzjerski</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -26,16 +26,34 @@
                             if (claimsIdentity == "Worker")
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Strona główna</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Worker" asp-action="AddServices">Dodaj usługę</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Worker" asp-action="AddWorkerAvailabilities">Dodaj dostępność</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Worker" asp-action="GetClientsBookings">Sprawdź rezerwacje klientów</a>
+                                </li>
+                            }
+                            else if (claimsIdentity == "Client")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Strona główna</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Client" asp-action="ServiceChoice_GetGetWorkerAvailabilities">Zarezerwuj wizytę</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Client" asp-action="BookedVisits">Sprawdź zarezerwowane wizyty</a>
                                 </li>
                             }
                             else
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Strona główna</a>
                                 </li>
                             }
                         }
@@ -46,7 +64,7 @@
                             if  (claimsIdentity == null)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="RegisterWorker">Rejestracja</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="RegisterClient">Rejestracja</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Zaloguj się</a>
@@ -55,7 +73,7 @@
                             else
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Witaj @this.User.FindFirstValue(ClaimTypes.Email)</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Twoje konto @this.User.FindFirstValue(ClaimTypes.Email)</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Wyloguj</a>
@@ -76,7 +94,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - projekt_programowanie - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 - projekt_programowanie - <a asp-area="" asp-controller="Home" asp-action="Privacy">Prywatność</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

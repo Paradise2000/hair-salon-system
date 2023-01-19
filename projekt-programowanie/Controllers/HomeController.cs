@@ -20,10 +20,8 @@ namespace projekt_programowanie.Controllers
             return View();
         }
 
-        [Authorize]
         public IActionResult Privacy()
         {
-            ViewBag.Role = this.User.FindFirstValue(ClaimTypes.Email);
             return View();
         }
 

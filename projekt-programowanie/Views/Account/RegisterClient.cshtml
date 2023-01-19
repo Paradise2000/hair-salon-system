@@ -1,8 +1,8 @@
 ﻿@model projekt_programowanie.DTOs.RegisterDto
 
-<h3>Rejestracja konta pracownika</h3>
+<h3>Rejestracja konta klienta</h3>
 
-@using (Html.BeginForm("RegisterWorker", "Account", FormMethod.Post))
+@using (Html.BeginForm("RegisterClient", "Account", FormMethod.Post))
 {
     <div class="form-group">
         @Html.LabelFor(model=>model.FirstName,"Imię")
