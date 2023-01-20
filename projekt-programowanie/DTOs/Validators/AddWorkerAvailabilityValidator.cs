@@ -22,6 +22,7 @@ namespace projekt_programowanie.DTOs.Validators
                    }
                });
 
+            RuleFor(r => r.Date).NotEmpty().WithMessage("Pole nie może być puste");
             RuleFor(r => r.Date)
                 .Custom((value, context) =>
                 {
@@ -31,6 +32,7 @@ namespace projekt_programowanie.DTOs.Validators
                     }
                 });
 
+            RuleFor(r => r.Start).NotEmpty().WithMessage("Pole nie może być puste");
             RuleFor(r => r.Start)
                 .Custom((value, context) =>
                 {
@@ -40,6 +42,7 @@ namespace projekt_programowanie.DTOs.Validators
                     }
                 });
 
+            RuleFor(r => r.End).NotEmpty().WithMessage("Pole nie może być puste");
             RuleFor(r => r.End)
                 .Custom((value, context) =>
                 {

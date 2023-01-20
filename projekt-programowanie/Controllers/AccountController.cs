@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using projekt_programowanie.DTOs;
@@ -11,10 +14,19 @@ namespace projekt_programowanie.Controllers
     public class AccountController : Controller
     {
         private readonly ProjektDbContext _context;
+        private readonly IValidator<RegisterWorkerDto> _validatorRegisterWorkerDto;
+        private readonly IValidator<RegisterClientDto> _validatorRegisterClientDto;
+        private readonly IPasswordHasher<User> _passwordHasher;
 
-        public AccountController(ProjektDbContext context)
+        public AccountController(ProjektDbContext context,
+            IValidator<RegisterWorkerDto> RegisterWorkerDto,
+            IValidator<RegisterClientDto> RegisterClientDto,
+            IPasswordHasher<User> passwordHasher)
         {
             _context = context;
+            _validatorRegisterWorkerDto = RegisterWorkerDto;
+            _validatorRegisterClientDto = RegisterClientDto;
+            _passwordHasher = passwordHasher;
         }
 
         public IActionResult Index()
@@ -29,20 +41,32 @@ namespace projekt_programowanie.Controllers
         }
 
         [HttpPost]
-        public IActionResult RegisterWorker(RegisterDto dto)
+        public IActionResult RegisterWorker(RegisterWorkerDto dto)
         {
-            _context.Workers.Add(new Worker
-            {
-                FirstName= dto.FirstName,
-                LastName= dto.LastName,
-                Email= dto.Email,
-                Phone= dto.Phone,
-                Password= dto.Password
-            });
+            var result = _validatorRegisterWorkerDto.Validate(dto);
 
+            if (!result.IsValid)
+            {
+                this.ModelState.Clear();
+                result.AddToModelState(this.ModelState);
+                return View(dto);
+            }
+
+            var newUser = new Worker()
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                Phone = dto.Phone
+            };
+
+            var hashedPassowrd = _passwordHasher.HashPassword(newUser, dto.Password);
+
+            newUser.Password = hashedPassowrd;
+            _context.Users.Add(newUser);
             _context.SaveChanges();
 
-            return View();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -52,20 +76,32 @@ namespace projekt_programowanie.Controllers
         }
 
         [HttpPost]
-        public IActionResult RegisterClient(RegisterDto dto)
+        public IActionResult RegisterClient(RegisterClientDto dto)
         {
-            _context.Clients.Add(new Client
+            var result = _validatorRegisterClientDto.Validate(dto);
+
+            if (!result.IsValid)
+            {
+                this.ModelState.Clear();
+                result.AddToModelState(this.ModelState);
+                return View(dto);
+            }
+
+            var newUser = new Client()
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Email = dto.Email,
-                Phone = dto.Phone,
-                Password = dto.Password
-            });
+                Phone = dto.Phone
+            };
 
+            var hashedPassowrd = _passwordHasher.HashPassword(newUser, dto.Password);
+
+            newUser.Password = hashedPassowrd;
+            _context.Users.Add(newUser);
             _context.SaveChanges();
 
-            return View();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -76,34 +112,32 @@ namespace projekt_programowanie.Controllers
 
         [HttpPost]
         public IActionResult Login(LoginDto dto)
-        {
-            ClaimsIdentity identity = null;
-            bool isAuthenticate = false;
-            var user =_context.Users.FirstOrDefault(u => u.Email == dto.Email && u.Password == dto.Password);
-            
+        {        
+            var user = _context.Users.FirstOrDefault(u => u.Email == dto.Email);
+
             if(user == null) 
             {
                 return RedirectToAction("Login");
             }
-            else
+
+            var result = _passwordHasher.VerifyHashedPassword(user, user.Password, dto.Password);
+
+            if(result == PasswordVerificationResult.Failed)
             {
-                identity = new ClaimsIdentity(new[]
+                return RedirectToAction("Login");
+            }
+            
+            ClaimsIdentity identity = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Role, user.Role)
                 }, CookieAuthenticationDefaults.AuthenticationScheme);
-                isAuthenticate = true;
-            }
 
-            if (isAuthenticate)
-            {
-                var principal = new ClaimsPrincipal(identity);
-                var login = HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-                return RedirectToAction("Index", "Home");
-            }
-
-            return View();
+            var principal = new ClaimsPrincipal(identity);
+            var login = HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]

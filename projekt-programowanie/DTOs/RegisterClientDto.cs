@@ -1,6 +1,6 @@
 ﻿namespace projekt_programowanie.DTOs
 {
-    public class RegisterDto
+    public class RegisterClientDto
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

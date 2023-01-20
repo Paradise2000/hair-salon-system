@@ -4,8 +4,10 @@ namespace projekt_programowanie.Entities
 {
     public class ProjektDbContext : DbContext
     {
-        private string _connectionString =
-            "Server=(localdb)\\mssqllocaldb;Database=ProjektDb;Trusted_Connection=True;";
+        public ProjektDbContext(DbContextOptions<ProjektDbContext> options) : base(options) 
+        {
+
+        }
 
         public DbSet<BookedVisit> BookedVisits { get; set; }
         public DbSet<Service> Services { get; set; }
@@ -19,12 +21,5 @@ namespace projekt_programowanie.Entities
             modelBuilder.Entity<User>()
                 .HasDiscriminator<string>("Role");
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(_connectionString);
-        }
     }
-
-
 }

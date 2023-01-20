@@ -1,4 +1,4 @@
-﻿@model projekt_programowanie.DTOs.RegisterDto
+﻿@model projekt_programowanie.DTOs.RegisterClientDto
 
 <h3>Rejestracja konta klienta</h3>
 
@@ -7,22 +7,32 @@
     <div class="form-group">
         @Html.LabelFor(model=>model.FirstName,"Imię")
         @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control"})
+
+        <p style="color:red"><span asp-validation-for=FirstName></span></p>
     </div>
     <div class="form-group">
         @Html.LabelFor(model=>model.LastName,"Nazwisko")
         @Html.TextBoxFor(model => model.LastName, new { @class = "form-control"})
+
+        <p style="color:red"><span asp-validation-for=LastName></span></p>
     </div>
     <div class="form-group">
         @Html.LabelFor(model=>model.Phone,"Telefon")
         @Html.TextBoxFor(model => model.Phone, new { @class="form-control", @type = "tel" })
+
+        <p style="color:red"><span asp-validation-for=Phone></span></p>
     </div>
     <div class="form-group">
         @Html.LabelFor(model=>model.Email,"Email")
         @Html.TextBoxFor(model => model.Email, new { @class="form-control" })
+
+        <p style="color:red"><span asp-validation-for=Email></span></p>
     </div>
     <div class="form-group">
         @Html.LabelFor(model=>model.Password,"Hasło")
         @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @type = "Password"  })
+
+        <p style="color:red"><span asp-validation-for=Password></span></p>
     </div>
     <input type="submit" class="btn btn-primary " value="Submit" />
 }

@@ -13,11 +13,15 @@ namespace projekt_programowanie.Controllers
     {
         private readonly ProjektDbContext _context;
         private readonly IValidator<AddWorkerAvailabilityDto> _validatorAddWorkerAvailabilityDto;
+        private readonly IValidator<AddServiceDto> _validatorAddServiceDto;
 
-        public WorkerController(ProjektDbContext context, IValidator<AddWorkerAvailabilityDto> AddWorkerAvailabilityDto)
+        public WorkerController(ProjektDbContext context,
+            IValidator<AddWorkerAvailabilityDto> AddWorkerAvailabilityDto,
+            IValidator<AddServiceDto> AddServiceDto)
         {
             _context = context;
             _validatorAddWorkerAvailabilityDto = AddWorkerAvailabilityDto;
+            _validatorAddServiceDto = AddServiceDto;
         }
 
         public IActionResult Index()
@@ -34,6 +38,15 @@ namespace projekt_programowanie.Controllers
         [HttpPost]
         public IActionResult AddServices(AddServiceDto dto)
         {
+            var result = _validatorAddServiceDto.Validate(dto);
+
+            if (!result.IsValid)
+            {
+                this.ModelState.Clear();
+                result.AddToModelState(this.ModelState);
+                return View(dto);
+            }
+
             _context.Services.Add(new Service
             {
                 ServiceName= dto.ServiceName,
@@ -59,6 +72,7 @@ namespace projekt_programowanie.Controllers
 
             if (!result.IsValid) 
             {
+                this.ModelState.Clear();
                 result.AddToModelState(this.ModelState);
                 return View(dto);
             }
