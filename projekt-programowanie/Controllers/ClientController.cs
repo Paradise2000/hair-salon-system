@@ -44,7 +44,7 @@ namespace projekt_programowanie.Controllers
         public IActionResult GetWorkerAvailabilities(int ServiceId)
         {
             var PickedService = _context.Services.FirstOrDefault(s => s.Id == ServiceId);
-            var WorkersAvailabilities = _context.WorkersAvailabilities.Include(r => r.Worker).Where(r => r.Date > DateTime.Today).OrderBy(s => s.Date).ToList();
+            var WorkersAvailabilities = _context.WorkersAvailabilities.Include(r => r.Worker).Where(r => r.Date > DateTime.Today && r.isCancelled == false).OrderBy(s => s.Date).ToList();
             var DatesAvailability = new List<GetWorkerAvailabilityDto>();
             int tempIterator = 0;
 
@@ -95,6 +95,16 @@ namespace projekt_programowanie.Controllers
         {
             var DaneTemp = JsonConvert.DeserializeObject<List<GetWorkerAvailabilityDto>>((string)TempData["DaneTemp"]);
             var dto = DaneTemp.FirstOrDefault(r => r.TempDataId== TempId);
+
+            if(dto == null)
+            {
+                return View("Message", new MessageViewModel("Ten termin nie istnieje", MessageType.Error, "Home", "Index"));
+            }
+
+            if(_context.WorkersAvailabilities.FirstOrDefault(c => c.Id == dto.WorkerAvailabilityId).isCancelled == true)
+            {
+                return View("Message", new MessageViewModel("Ten termin nie jest już dostępny", MessageType.Error, "Home", "Index"));
+            }
 
             if (_context.BookedVisits.Where(r => r.StartTime.TimeOfDay < dto.End && dto.Start < r.EndTime.TimeOfDay && r.isCancelled == false).Count() != 0)
             {

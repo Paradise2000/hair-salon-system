@@ -99,21 +99,28 @@ namespace projekt_programowanie.Controllers
         public IActionResult GetClientsBookings()
         {
             var CurrentUser = int.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var BookedVisits = _context.BookedVisits
+            var BookedVisits = _context.WorkersAvailabilities
                 .Where(r => r.WorkerId == CurrentUser && r.isCancelled == false)
                 .OrderBy(r => r.StartTime)
-                .Select(v => new GetClientsBookingsDto
+                .Select(v => new GetClientsBookingsListDto
                 {
-                    Id= v.Id,
-                    ClientFirstName = v.Client.FirstName,
-                    ClientLastName = v.Client.LastName,
-                    ClientPhone= v.Client.Phone,
-                    ServiceName = v.Service.ServiceName,
-                    Date = v.StartTime.Date,
-                    Start = v.StartTime.TimeOfDay,
-                    End = v.EndTime.TimeOfDay,
-                    Price = v.Service.ServicePrice
-                }).ToList();
+                    AvailabilityId = v.Id,
+                    Date= v.Date,
+                    StartTime= v.StartTime,
+                    EndTime= v.EndTime,
+                    bookedVisits = v.BookedVisits.Where(w => w.isCancelled == false).Select(d => new GetClientsBookingsDto
+                    {
+                        Id = d.Id,
+                        ClientFirstName = d.Client.FirstName,
+                        ClientLastName = d.Client.LastName,
+                        ClientPhone = d.Client.Phone,
+                        ServiceName = d.Service.ServiceName,
+                        Date = d.StartTime.Date,
+                        Start = d.StartTime.TimeOfDay,
+                        End = d.EndTime.TimeOfDay,
+                        Price = d.Service.ServicePrice
+                    }).ToList()
+                });
 
             return View(BookedVisits);
         }
@@ -129,6 +136,22 @@ namespace projekt_programowanie.Controllers
             _context.SaveChanges();
 
             return View("Message", new MessageViewModel("Odwołano twoją wizytę", MessageType.Success, "Worker", "GetClientsBookings"));
+        }
+
+        [HttpPost]
+        public IActionResult CancelAvailability(int Id)
+        {
+            var CurrentUser = int.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var Availabilty = _context.WorkersAvailabilities
+                .Include(r => r.BookedVisits)
+                .FirstOrDefault(r => r.WorkerId == CurrentUser && r.Id == Id);
+            Availabilty.isCancelled = true;
+            Availabilty.BookedVisits.ForEach(w => w.isCancelled = true); 
+
+            _context.SaveChanges();
+
+            return View("Message", new MessageViewModel("Odwołano całą twoją dostępność", MessageType.Success, "Worker", "GetClientsBookings"));
         }
 
     }

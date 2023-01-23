@@ -1,73 +1,67 @@
-﻿@model IEnumerable<projekt_programowanie.DTOs.GetClientsBookingsDto>
+﻿@model IEnumerable<projekt_programowanie.DTOs.GetClientsBookingsListDto>
 
 <h3>Zarezerwowane wizyty</h3>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Imię klienta
-            </th>
-            <th>
-                Nazwisko klienta
-            </th>
-            <th>
-                Telefon do klienta
-            </th>
-            <th>
-                Nazwa usługi
-            </th>
-            <th>
-                Data
-            </th>
-            <th>
-                Od godziny
-            </th>
-            <th>
-                Do godziny
-            </th>
-            <th>
-                Cena
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+@foreach(var item1 in Model)
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ClientFirstName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ClientLastName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ClientPhone)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ServiceName)
-                </td>
-                <td>
-                    @Convert.ToDateTime(item.Date).ToString("dd/MM/yyyy")
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Start)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.End)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    @using (Html.BeginForm("CancelBooking", "Worker", FormMethod.Post))
-                    {
-                        <input type="hidden" name="Id" value="@item.Id" />
-                        <input type="submit" class="btn btn-danger " value="Anuluj rezerwację" />
-                    }
-                </td>
+                <th>
+                    Data dostępności: @Convert.ToDateTime(item1.Date).ToString("dd/MM/yyyy")
+                </th>
+                <th>
+                    Początek dostępności: @Html.DisplayFor(modelItem => item1.StartTime)
+                </th>
+                <th>
+                    Koniec dostępności: @Html.DisplayFor(modelItem => item1.EndTime)
+                </th>
+                <th>
+                    @using (Html.BeginForm("CancelAvailability", "Worker", FormMethod.Post))
+                        {
+                            <input type="hidden" name="Id" value="@item1.AvailabilityId" />
+                            <input type="submit" class="btn btn-danger " value="Anuluj dostępność" />
+                        }
+                </th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item2 in item1.bookedVisits)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.ClientFirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.ClientLastName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.ClientPhone)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.ServiceName)
+                    </td>
+                    <td>
+                        @Convert.ToDateTime(item2.Date).ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.Start)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.End)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item2.Price)
+                    </td>
+                    <td>
+                        @using (Html.BeginForm("CancelBooking", "Worker", FormMethod.Post))
+                        {
+                            <input type="hidden" name="Id" value="@item2.Id" />
+                            <input type="submit" class="btn btn-danger " value="Anuluj rezerwację" />
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
