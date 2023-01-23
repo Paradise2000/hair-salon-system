@@ -36,7 +36,7 @@
         }
 
         @Html.CheckBoxFor(model => model.ChangePasswordChecked, new {@id= "passwordCheck", @onclick="IsChecked()"}) Chcesz zmienić hasło ?
-        <p id="label" style=ViewBag.Display><br />Podaj nowe hasło:</p>
+        <p id="label" style=@ViewBag.Display><br />Podaj nowe hasło:</p>
         @Html.TextBoxFor(model => model.Password, new { @id="text", @style=ViewBag.Display, @class = "form-control", @type = "Password"  })
 
         <p style="color:red"><span asp-validation-for=Password></span></p>

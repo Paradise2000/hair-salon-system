@@ -106,7 +106,7 @@ namespace projekt_programowanie.Controllers
                 return View("Message", new MessageViewModel("Ten termin nie jest już dostępny", MessageType.Error, "Home", "Index"));
             }
 
-            if (_context.BookedVisits.Where(r => r.StartTime.TimeOfDay < dto.End && dto.Start < r.EndTime.TimeOfDay && r.isCancelled == false).Count() != 0)
+            if (_context.BookedVisits.Where(r => r.StartTime.TimeOfDay < dto.End && dto.Start < r.EndTime.TimeOfDay && r.WorkerAvailabilityId == dto.WorkerAvailabilityId && r.isCancelled == false).Count() != 0)
             {
                 return View("Message", new MessageViewModel("Ta wizyta została już zarezerwowana", MessageType.Error, "Home", "Index"));
             }
