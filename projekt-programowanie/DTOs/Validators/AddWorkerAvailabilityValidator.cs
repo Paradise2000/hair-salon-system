@@ -15,7 +15,7 @@ namespace projekt_programowanie.DTOs.Validators
 
                    foreach(var workerAvailability in workerAvailabilities)
                    {
-                       if (value.Start < workerAvailability.EndTime && workerAvailability.StartTime < value.End)
+                       if (value.Start < workerAvailability.EndTime && workerAvailability.StartTime < value.End && workerAvailability.isCancelled == false)
                        {
                            context.AddFailure("Date","Podany przez ciebie czas dostępności koliduje z innymi czasami dostępności, które już podałeś.");
                        }

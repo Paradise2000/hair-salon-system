@@ -4,7 +4,6 @@
 
 @using (Html.BeginForm("AddWorkerAvailabilities", "Worker", FormMethod.Post))
 {
-
     <div class="form-group">
         @Html.LabelFor(model=>model.Date,"Data dostępności")
         @Html.TextBoxFor(model => model.Date, new { @class = "form-control", @type="date"})

@@ -1,14 +1,18 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using projekt_programowanie.DTOs;
 using projekt_programowanie.Entities;
+using projekt_programowanie.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Security.Claims;
 
 namespace projekt_programowanie.Controllers
 {
+    [Authorize(Roles = "Worker")]
     public class WorkerController : Controller
     {
         private readonly ProjektDbContext _context;
@@ -56,7 +60,7 @@ namespace projekt_programowanie.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("Index", "Home");
+            return View("Message", new MessageViewModel("Pomyślnie dodano usługę", MessageType.Success, "Worker", "AddServices"));
         }
 
         [HttpGet]
@@ -82,12 +86,13 @@ namespace projekt_programowanie.Controllers
                 WorkerId = int.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier)),
                 Date = dto.Date,
                 StartTime = dto.Start,
-                EndTime = dto.End
+                EndTime = dto.End,
+                isCancelled = false
             });
 
             _context.SaveChanges();
 
-            return View();
+            return View("Message", new MessageViewModel("Pomyślnie dodano twoją dostępność", MessageType.Success, "Worker", "AddWorkerAvailabilities"));
         }
 
         [HttpGet]
@@ -95,9 +100,11 @@ namespace projekt_programowanie.Controllers
         {
             var CurrentUser = int.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
             var BookedVisits = _context.BookedVisits
-                .Where(r => r.WorkerId == CurrentUser)
+                .Where(r => r.WorkerId == CurrentUser && r.isCancelled == false)
+                .OrderBy(r => r.StartTime)
                 .Select(v => new GetClientsBookingsDto
                 {
+                    Id= v.Id,
                     ClientFirstName = v.Client.FirstName,
                     ClientLastName = v.Client.LastName,
                     ClientPhone= v.Client.Phone,
@@ -109,6 +116,19 @@ namespace projekt_programowanie.Controllers
                 }).ToList();
 
             return View(BookedVisits);
+        }
+
+        [HttpPost]
+        public IActionResult CancelBooking(int Id)
+        {
+            var CurrentUser = int.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var BookedVisit = _context.BookedVisits.FirstOrDefault(r => r.WorkerId == CurrentUser && r.Id == Id);
+            BookedVisit.isCancelled = true;
+
+            _context.SaveChanges();
+
+            return View("Message", new MessageViewModel("Odwołano twoją wizytę", MessageType.Success, "Worker", "GetClientsBookings"));
         }
 
     }

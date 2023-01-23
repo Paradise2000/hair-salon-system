@@ -45,14 +45,8 @@
                 <td>
                     @using (Html.BeginForm("VisitBooking", "Client", FormMethod.Post))
                     {
-                        <input type="hidden" name="ServiceId" value="@item.ServiceId" />
-                        <input type="hidden" name="WorkerId" value="@item.WorkerId" />
-                        <input type="hidden" name="WorkerFirstName" value="@item.WorkerFirstName" />
-                        <input type="hidden" name="WorkerPhone" value="@item.WorkerPhone" />
-                        <input type="hidden" name="Date" value="@item.Date" />
-                        <input type="hidden" name="Start" value="@item.Start" />
-                        <input type="hidden" name="End" value="@item.End" />
-                        <input type="hidden" name="Price" value="@item.Price" />
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="TempId" value="@item.TempDataId" />
                         <input type="submit" class="btn btn-primary " value="Rezerwuj teraz" />
                     }
                 </td>

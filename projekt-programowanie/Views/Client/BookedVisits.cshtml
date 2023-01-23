@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<projekt_programowanie.DTOs.BookedVisitsDto>
 
-<h3>Dostępne terminy dla wybranej usługi</h3>
+<h3>Twoje rezerwacje</h3>
 
 <table class="table">
     <thead>
@@ -53,6 +53,13 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @using (Html.BeginForm("CancelBooking", "Client", FormMethod.Post))
+                    {
+                        <input type="hidden" name="Id" value="@item.Id" />
+                        <input type="submit" class="btn btn-danger " value="Anuluj rezerwację" />
+                    }
                 </td>
             </tr>
         }

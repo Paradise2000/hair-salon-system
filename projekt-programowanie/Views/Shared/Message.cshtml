@@ -1,0 +1,13 @@
+﻿@model MessageViewModel
+
+@if(Model.MessageType == MessageType.Success)
+{
+    <p style="color: darkgreen">@Model.Message</p>
+}
+
+@if (Model.MessageType == MessageType.Error)
+{
+    <p style="color: red">@Model.Message</p>
+}
+
+<a class="btn btn-primary" asp-area="" asp-controller="@Model.Redirect_ControllerName" asp-action="@Model.Redirect_ActionName">Rozumiem</a>

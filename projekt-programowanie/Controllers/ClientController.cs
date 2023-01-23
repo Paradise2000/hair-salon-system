@@ -1,13 +1,21 @@
 ﻿using Azure.Identity;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
+using Newtonsoft.Json;
 using projekt_programowanie.DTOs;
 using projekt_programowanie.Entities;
+using projekt_programowanie.Models;
+using System.Data;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 
 namespace projekt_programowanie.Controllers
 {
+    [Authorize(Roles = "Client")]
     public class ClientController : Controller
     {
         private readonly ProjektDbContext _context;
@@ -38,12 +46,11 @@ namespace projekt_programowanie.Controllers
             var PickedService = _context.Services.FirstOrDefault(s => s.Id == ServiceId);
             var WorkersAvailabilities = _context.WorkersAvailabilities.Include(r => r.Worker).Where(r => r.Date > DateTime.Today).OrderBy(s => s.Date).ToList();
             var DatesAvailability = new List<GetWorkerAvailabilityDto>();
+            int tempIterator = 0;
 
             foreach(var WorkerAvailability in WorkersAvailabilities)
             {
-                var StartTimeW = WorkerAvailability.Date + WorkerAvailability.StartTime;
-                var EndTimeW = WorkerAvailability.Date + WorkerAvailability.EndTime;
-                var Visits = _context.BookedVisits.Where(r => r.StartTime >= StartTimeW && r.EndTime <= EndTimeW && r.WorkerId == WorkerAvailability.WorkerId).OrderBy(o => o.StartTime).ToList();
+                var Visits = _context.BookedVisits.Where(r => r.WorkerAvailabilityId == WorkerAvailability.Id && r.WorkerId == WorkerAvailability.WorkerId).OrderBy(o => o.StartTime).ToList();
 
                 for(TimeSpan i = WorkerAvailability.StartTime; i + PickedService.ServiceDuration <= WorkerAvailability.EndTime; i = i + new TimeSpan(0, 30, 0))
                 {
@@ -51,7 +58,7 @@ namespace projekt_programowanie.Controllers
 
                     foreach(var visit in Visits)
                     {
-                        if (visit.StartTime.TimeOfDay < i + PickedService.ServiceDuration && i < visit.EndTime.TimeOfDay)
+                        if (visit.StartTime.TimeOfDay < i + PickedService.ServiceDuration && i < visit.EndTime.TimeOfDay && visit.isCancelled == false)
                         {
                             //jest kolizja wizytowa
                             flaga = true;
@@ -62,8 +69,10 @@ namespace projekt_programowanie.Controllers
                     {
                         DatesAvailability.Add(new GetWorkerAvailabilityDto
                         {
+                            TempDataId= tempIterator,
                             ServiceId = PickedService.Id,
                             WorkerId = WorkerAvailability.WorkerId,
+                            WorkerAvailabilityId = WorkerAvailability.Id,
                             WorkerFirstName = WorkerAvailability.Worker.FirstName,
                             WorkerPhone = WorkerAvailability.Worker.Phone,
                             Date = WorkerAvailability.Date,
@@ -71,19 +80,26 @@ namespace projekt_programowanie.Controllers
                             End = i + PickedService.ServiceDuration,
                             Price = PickedService.ServicePrice
                         });
+                        tempIterator++;
                     }
                 }
-
             }
 
+            TempData["DaneTemp"] = JsonConvert.SerializeObject(DatesAvailability);
+            //DatesAvailability.OrderBy(r => r.Start).ToList();
             return View(DatesAvailability);
         }
 
         [HttpPost]
-        public IActionResult VisitBooking(GetWorkerAvailabilityDto dto)
+        public IActionResult VisitBooking(int TempId)
         {
-            //walidacja potrzebna
-            //Musi być authorize tylko dla klienta
+            var DaneTemp = JsonConvert.DeserializeObject<List<GetWorkerAvailabilityDto>>((string)TempData["DaneTemp"]);
+            var dto = DaneTemp.FirstOrDefault(r => r.TempDataId== TempId);
+
+            if (_context.BookedVisits.Where(r => r.StartTime.TimeOfDay < dto.End && dto.Start < r.EndTime.TimeOfDay && r.isCancelled == false).Count() != 0)
+            {
+                return View("Message", new MessageViewModel("Ta wizyta została już zarezerwowana", MessageType.Error, "Home", "Index"));
+            }
 
             _context.BookedVisits.Add(new BookedVisit
             {
@@ -92,12 +108,13 @@ namespace projekt_programowanie.Controllers
                 WorkerId= dto.WorkerId,
                 ClientId = int.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier)),
                 ServiceId = dto.ServiceId,
-                isCancelled = false
+                isCancelled = false,
+                WorkerAvailabilityId = dto.WorkerAvailabilityId
             });
 
             _context.SaveChanges();
 
-            return View();
+            return View("Message", new MessageViewModel("Zarezerwowano wizytę", MessageType.Success, "Home", "Index"));
         }
 
         [HttpGet]
@@ -105,9 +122,11 @@ namespace projekt_programowanie.Controllers
         {
             var CurrentUser = int.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
             var BookedVisits = _context.BookedVisits
-                .Where(r => r.ClientId == CurrentUser)
+                .Where(r => r.ClientId == CurrentUser && r.isCancelled == false)
+                .OrderBy(r => r.StartTime)
                 .Select(v => new BookedVisitsDto
                 {
+                    Id = v.Id,
                     ServiceName = v.Service.ServiceName,
                     WorkerFirstName = v.Worker.FirstName,
                     WorkerPhone = v.Worker.Phone,
@@ -118,6 +137,19 @@ namespace projekt_programowanie.Controllers
                 }).ToList();
 
             return View(BookedVisits);
+        }
+
+        [HttpPost]
+        public IActionResult CancelBooking(int Id)
+        {
+            var CurrentUser = int.Parse(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var BookedVisit = _context.BookedVisits.FirstOrDefault(r => r.ClientId == CurrentUser && r.Id == Id);
+            BookedVisit.isCancelled = true;
+
+            _context.SaveChanges();
+
+            return View("Message", new MessageViewModel("Odwołano wizytę", MessageType.Success, "Client", "BookedVisits"));
         }
     }
 }

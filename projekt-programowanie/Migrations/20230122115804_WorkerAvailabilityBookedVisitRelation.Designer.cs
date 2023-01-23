@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using projekt_programowanie.Entities;
 
@@ -11,9 +12,11 @@ using projekt_programowanie.Entities;
 namespace projektprogramowanie.Migrations
 {
     [DbContext(typeof(ProjektDbContext))]
-    partial class ProjektDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230122115804_WorkerAvailabilityBookedVisitRelation")]
+    partial class WorkerAvailabilityBookedVisitRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,9 +150,6 @@ namespace projektprogramowanie.Migrations
 
                     b.Property<int>("WorkerId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("isCancelled")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

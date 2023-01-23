@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using projekt_programowanie.Entities;
 
 namespace projekt_programowanie.DTOs.Validators
 {

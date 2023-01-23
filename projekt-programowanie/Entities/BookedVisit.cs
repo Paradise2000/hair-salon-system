@@ -15,5 +15,8 @@
 
         public int? ServiceId { get; set; }
         public Service Service { get; set; }
+
+        public int? WorkerAvailabilityId { get; set; }
+        public WorkerAvailability WorkerAvailability { get; set; }
     }
 }

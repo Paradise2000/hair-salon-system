@@ -2,9 +2,9 @@
 
 namespace projekt_programowanie.DTOs.Validators
 {
-    public class RegisterClientValidator : AbstractValidator<RegisterClientDto>
+    public class UpdateDataDtoValidator : AbstractValidator<UpdateDataDto>
     {
-        public RegisterClientValidator()
+        public UpdateDataDtoValidator()
         {
             RuleFor(r => r.FirstName).NotEmpty().WithMessage("Pole nie może być puste");
             RuleFor(r => r.FirstName).MinimumLength(2).WithMessage("Imię musi mieć co najmniej 2 litery");
@@ -18,8 +18,11 @@ namespace projekt_programowanie.DTOs.Validators
             RuleFor(r => r.Phone).NotEmpty().WithMessage("Pole nie może być puste");
             RuleFor(r => r.Phone).Length(9).WithMessage("Telefon musi składać się z 9 cyfr");
 
-            RuleFor(r => r.Password).NotEmpty().WithMessage("Pole nie może być puste");
-            RuleFor(r => r.Password).MinimumLength(8).WithMessage("Hasło musi składać się przynajmniej z 8 liter");
+            When(r => r.ChangePasswordChecked == true, () =>
+            {
+                RuleFor(r => r.Password).NotEmpty().WithMessage("Pole nie może być puste");
+                RuleFor(r => r.Password).MinimumLength(8).WithMessage("Hasło musi składać się przynajmniej z 8 liter");
+            });
         }
     }
 }

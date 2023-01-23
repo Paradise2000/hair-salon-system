@@ -2,6 +2,7 @@
 {
     public class GetClientsBookingsDto
     {
+        public int Id { get; set; }
         public string ClientFirstName { get; set; }
         public string ClientLastName { get; set; }
         public string ClientPhone { get; set; }

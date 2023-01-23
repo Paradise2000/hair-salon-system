@@ -12,6 +12,12 @@
         @Html.LabelFor(model=>model.Password,"Hasło")
         @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @type = "Password"  })
     </div>
+
+    if(!string.IsNullOrEmpty(ViewBag.message))
+    {
+        <p style="color:red">@ViewBag.message</p>
+    }
+
     <input type="submit" class="btn btn-primary " value="Zaloguj się" />
 }
 
