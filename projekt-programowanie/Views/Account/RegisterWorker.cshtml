@@ -5,7 +5,7 @@
 @using (Html.BeginForm("RegisterWorker", "Account", FormMethod.Post))
 {
     <div class="form-group">
-        @Html.LabelFor(model=>model.SpecialPasswordForRegister,"Specjalne hasło")
+        @Html.LabelFor(model=>model.SpecialPasswordForRegister,"Specjalne hasło (znajduje się na początku w dokumentacji)")
         @Html.TextBoxFor(model => model.SpecialPasswordForRegister, new { @class = "form-control"})
 
         <p style="color:red"><span asp-validation-for=SpecialPasswordForRegister></span></p>
