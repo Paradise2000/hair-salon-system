@@ -1,11 +1,22 @@
 ﻿using FluentValidation;
+using projekt_programowanie.Entities;
 
 namespace projekt_programowanie.DTOs.Validators
 {
     public class UpdateDataDtoValidator : AbstractValidator<UpdateDataDto>
     {
-        public UpdateDataDtoValidator()
+        public UpdateDataDtoValidator(ProjektDbContext db)
         {
+            RuleFor(x => x.Email)
+                .Custom((value, context) =>
+                {
+                    var isUsed = db.Users.Any(u => u.Email == value);
+                    if (isUsed)
+                    {
+                        context.AddFailure("Ten adres email jest już zajęty");
+                    }
+                });
+
             RuleFor(r => r.FirstName).NotEmpty().WithMessage("Pole nie może być puste");
             RuleFor(r => r.FirstName).MinimumLength(2).WithMessage("Imię musi mieć co najmniej 2 litery");
 
