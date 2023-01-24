@@ -1,11 +1,23 @@
 ﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using projekt_programowanie.Entities;
 
 namespace projekt_programowanie.DTOs.Validators
 {
     public class RegisterWorkerValidator : AbstractValidator<RegisterWorkerDto>
     {
-        public RegisterWorkerValidator(IHttpContextAccessor httpContext, IConfiguration config)
+        public RegisterWorkerValidator(IHttpContextAccessor httpContext, IConfiguration config, ProjektDbContext db)
         {
+            RuleFor(x => x.Email)
+                .Custom((value, context) =>
+                {
+                    var isUsed = db.Users.Any(u => u.Email == value);
+                    if (isUsed)
+                    {
+                        context.AddFailure("Ten adres email jest już zajęty");
+                    }
+                });
+
             RuleFor(r => r.SpecialPasswordForRegister).NotEmpty().WithMessage("Pole nie może być puste");
             RuleFor(r => r.SpecialPasswordForRegister).Equal(config.GetValue<string>("AppConfiguration:SpecialPasswordForRegister")).WithMessage("Specjalne hasło jest niepoprawne");
 
